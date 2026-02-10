@@ -1,5 +1,5 @@
-flask==3.1.2
+flask
 gunicorn
-numpy==2.4.2
-pillow==12.1.0
-scikit-learn==1.8.0
+numpy
+pillow
+scikit-learn

@@ -30,15 +30,17 @@ model = None
 def load_model():
     """Load the trained model from disk."""
     global model
-    if os.path.exists(MODEL_PATH):
-        print(f"Loading model from {MODEL_PATH}...")
+    if model is not None:
+        return
+    print(f"Looking for model at {MODEL_PATH}...", flush=True)
+    print(f"File exists: {os.path.exists(MODEL_PATH)}", flush=True)
+    try:
         with open(MODEL_PATH, "rb") as f:
             model = pickle.load(f)
-        print("Model loaded successfully.")
-    else:
-        print(f"ERROR: Model file not found.")
-        print("Please place digit_model.pkl in the same directory as app.py.")
-        sys.exit(1)
+        print("Model loaded successfully.", flush=True)
+    except Exception as e:
+        print(f"ERROR loading model: {e}", flush=True)
+        raise
 
 
 def preprocess_image(img):
@@ -133,7 +135,11 @@ def predict():
     })
 
 
-load_model()
+@app.before_request
+def ensure_model():
+    """Load model on first request (lazy loading for Render compatibility)."""
+    load_model()
+
 
 if __name__ == "__main__":
     print("Starting web server at http://localhost:5000")
